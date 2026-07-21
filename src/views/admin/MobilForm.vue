@@ -8,8 +8,9 @@
 
     <main class="container form-wrap">
       <h1>{{ isEdit ? 'Edit Mobil' : 'Tambah Mobil' }}</h1>
-      <p class="form-subtitle">{{ isEdit ? 'Perbarui detail unit yang sudah terdaftar.' : 'Lengkapi detail unit baru
-        untuk ditampilkan di katalog.' }} \</p>
+        <p class="form-subtitle">
+          {{ isEdit ? 'Perbarui detail unit yang sudah terdaftar.' : 'Lengkapi detail unit baru untuk ditampilkan di katalog.' }}
+        </p>
 
       <form @submit.prevent="simpan" class="form-card">
         <section class="form-section">
