@@ -1,13 +1,13 @@
 :root {
-  --bg: #1b1c1e;
-  --surface: #242628;
-  --surface-hover: #2c2f32;
-  --text: #edeae4;
-  --text-muted: #9b9995;
-  --accent: #e8963c;
+  --bg: #f7f4ee;
+  --surface: #ffffff;
+  --surface-hover: #f1ede4;
+  --text: #211f1c;
+  --text-muted: #7a776f;
+  --accent: #c1611d;
   --tersedia: #2f6f4e;
   --terjual: #b0413e;
-  --border: #35383b;
+  --border: #e4e0d6;
 
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body: 'Inter', sans-serif;

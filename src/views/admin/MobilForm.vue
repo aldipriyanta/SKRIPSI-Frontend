@@ -8,85 +8,127 @@
 
     <main class="container form-wrap">
       <h1>{{ isEdit ? 'Edit Mobil' : 'Tambah Mobil' }}</h1>
+      <p class="form-subtitle">{{ isEdit ? 'Perbarui detail unit yang sudah terdaftar.' : 'Lengkapi detail unit baru untuk ditampilkan di katalog.' }}</p>
 
-      <form @submit.prevent="simpan" class="form">
-        <label>Nama Mobil</label>
-        <input v-model="form.nama_mobil" required />
+      <form @submit.prevent="simpan" class="form-card">
+        <section class="form-section">
+          <h2 class="section-title">Informasi Dasar</h2>
 
-        <label>Merek</label>
-        <select v-model="form.id_merek" required>
-          <option value="" disabled>Pilih merek</option>
-          <option v-for="m in daftarMerek" :key="m.id_merek" :value="m.id_merek">{{ m.nama_merek }}</option>
-        </select>
-
-        <label>Kategori</label>
-        <select v-model="form.id_kategori" required>
-          <option value="" disabled>Pilih kategori</option>
-          <option v-for="k in daftarKategori" :key="k.id_kategori" :value="k.id_kategori">{{ k.nama_kategori }}</option>
-        </select>
-
-        <div class="form-row">
-          <div>
-            <label>Tipe</label>
-            <input v-model="form.tipe" />
+          <div class="field">
+            <label>Nama Mobil</label>
+            <input v-model="form.nama_mobil" placeholder="Contoh: Avanza, Brio, Xenia" required />
           </div>
-          <div>
-            <label>Tahun</label>
-            <input v-model="form.tahun" type="number" />
-          </div>
-        </div>
 
-        <div class="form-row">
-          <div>
-            <label>Transmisi</label>
-            <input v-model="form.transmisi" />
+          <div class="field-row">
+            <div class="field">
+              <label>Merek</label>
+              <select v-model="form.id_merek" required>
+                <option value="" disabled>Pilih merek</option>
+                <option v-for="m in daftarMerek" :key="m.id_merek" :value="m.id_merek">{{ m.nama_merek }}</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Kategori</label>
+              <select v-model="form.id_kategori" required>
+                <option value="" disabled>Pilih kategori</option>
+                <option v-for="k in daftarKategori" :key="k.id_kategori" :value="k.id_kategori">{{ k.nama_kategori }}</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <label>Bahan Bakar</label>
-            <input v-model="form.bahan_bakar" />
-          </div>
-        </div>
+        </section>
 
-        <div class="form-row">
-          <div>
+        <section class="form-section">
+          <h2 class="section-title">Spesifikasi</h2>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Tipe / Varian</label>
+              <input v-model="form.tipe" placeholder="Contoh: G, RS, Ultimate" />
+            </div>
+            <div class="field">
+              <label>Tahun Produksi</label>
+              <input v-model="form.tahun" type="number" placeholder="2023" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Transmisi</label>
+              <select v-model="form.transmisi">
+                <option value="">Pilih transmisi</option>
+                <option value="Manual">Manual</option>
+                <option value="Automatic">Automatic</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Bahan Bakar</label>
+              <select v-model="form.bahan_bakar">
+                <option value="">Pilih bahan bakar</option>
+                <option value="Bensin">Bensin</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Listrik">Listrik</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
             <label>Kilometer</label>
-            <input v-model="form.kilometer" type="number" />
+            <input v-model="form.kilometer" type="number" placeholder="15000" />
           </div>
-          <div>
-            <label>Harga (Rp)</label>
-            <input v-model="form.harga" type="number" required />
+        </section>
+
+        <section class="form-section">
+          <h2 class="section-title">Harga & Status</h2>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Harga (Rp)</label>
+              <input v-model="form.harga" type="number" placeholder="185000000" required />
+            </div>
+            <div class="field">
+              <label>Status Stok</label>
+              <select v-model="form.status_stok">
+                <option value="tersedia">Tersedia</option>
+                <option value="terjual">Terjual</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <label>Status Stok</label>
-        <select v-model="form.status_stok">
-          <option value="tersedia">Tersedia</option>
-          <option value="terjual">Terjual</option>
-        </select>
-
-        <label>Deskripsi</label>
-        <textarea v-model="form.deskripsi" rows="4"></textarea>
+          <div class="field">
+            <label>Deskripsi</label>
+            <textarea v-model="form.deskripsi" rows="4" placeholder="Kondisi kendaraan, riwayat servis, atau info tambahan lainnya"></textarea>
+          </div>
+        </section>
 
         <p v-if="error" class="error">{{ error }}</p>
 
-        <button type="submit" :disabled="saving">{{ saving ? 'Menyimpan...' : 'Simpan' }}</button>
+        <div class="form-actions">
+          <RouterLink to="/admin" class="btn-secondary">Batal</RouterLink>
+          <button type="submit" class="btn-primary" :disabled="saving">
+            {{ saving ? 'Menyimpan...' : 'Simpan Data' }}
+          </button>
+        </div>
       </form>
 
-      <div v-if="isEdit" class="gambar-section">
-        <h2>Foto Mobil</h2>
+      <section v-if="isEdit" class="form-card gambar-card">
+        <h2 class="section-title">Foto Mobil</h2>
 
-        <div class="gambar-grid">
+        <div v-if="daftarGambar.length" class="gambar-grid">
           <div v-for="g in daftarGambar" :key="g.id_gambar" class="gambar-item">
             <img :src="`${apiOrigin}${g.url_gambar}`" />
-            <button @click="hapusGambar(g.id_gambar)">Hapus</button>
+            <button class="gambar-hapus" @click="hapusGambar(g.id_gambar)" aria-label="Hapus foto">&times;</button>
           </div>
         </div>
+        <p v-else class="empty-note">Belum ada foto untuk mobil ini.</p>
 
         <form @submit.prevent="uploadGambar" class="upload-form">
           <input type="file" accept="image/png, image/jpeg, image/webp" @change="pilihFile" required />
-          <button type="submit" :disabled="uploading">{{ uploading ? 'Mengunggah...' : 'Upload' }}</button>
+          <button type="submit" class="btn-secondary" :disabled="uploading">
+            {{ uploading ? 'Mengunggah...' : 'Upload Foto' }}
+          </button>
         </form>
-      </div>
+      </section>
     </main>
   </div>
 </template>
@@ -133,12 +175,11 @@ async function simpan() {
   try {
     if (isEdit.value) {
       await api.put(`/mobil/${route.params.id}`, form);
+      router.push('/admin');
     } else {
       const res = await api.post('/mobil', form);
       router.push(`/admin/mobil/${res.data.data.id_mobil}`);
-      return;
     }
-    router.push('/admin');
   } catch (err) {
     error.value = err.response?.data?.message || 'Gagal menyimpan data';
   } finally {
@@ -180,39 +221,108 @@ onMounted(async () => {
 <style scoped>
 .admin-topbar { border-bottom: 1px solid var(--border); padding: 16px 0; }
 .back-link { color: var(--text-muted); font-size: 14px; }
+.back-link:hover { color: var(--accent); }
 
-.form-wrap { max-width: 560px; padding-bottom: 60px; }
-.form-wrap h1 { font-size: 28px; margin: 32px 0 20px; }
+.form-wrap { max-width: 640px; padding: 32px 24px 60px; }
+.form-wrap h1 { font-size: 28px; }
+.form-subtitle { color: var(--text-muted); font-size: 14px; margin: 6px 0 24px; }
 
-.form { display: flex; flex-direction: column; }
-.form label { font-size: 13px; color: var(--text-muted); margin: 14px 0 6px; }
-.form input, .form select, .form textarea {
-  padding: 10px; border-radius: 6px; border: 1px solid var(--border);
-  background: var(--surface); color: var(--text); font-family: inherit;
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 24px;
 }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.error { color: var(--terjual); font-size: 13px; margin-top: 14px; }
 
-.form button {
-  margin-top: 24px; padding: 12px; border-radius: 6px; border: none;
-  background: var(--accent); color: var(--bg); font-weight: 600; cursor: pointer;
+.form-section + .form-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
 }
-.form button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-.gambar-section { margin-top: 20px; }
-.gambar-section h2 { font-size: 20px; margin-bottom: 14px; }
-.gambar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin: 0 0 16px;
+}
+
+.field { display: flex; flex-direction: column; margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+.field label { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+.field input, .field select, .field textarea {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.field textarea { resize: vertical; }
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.field-row .field { margin-bottom: 0; }
+
+.error { color: var(--terjual); font-size: 13px; margin: 0 0 16px; }
+
+.form-actions { display: flex; justify-content: flex-end; gap: 12px; }
+.btn-primary, .btn-secondary {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+}
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-secondary { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+.btn-secondary:hover { color: var(--text); border-color: var(--text-muted); }
+
+.gambar-card { margin-top: 8px; }
+.empty-note { color: var(--text-muted); font-size: 13px; margin: 0 0 16px; }
+
+.gambar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
 .gambar-item { position: relative; }
-.gambar-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
-.gambar-item button {
-  position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.7);
-  color: var(--terjual); border: none; border-radius: 4px; font-size: 11px; padding: 3px 6px; cursor: pointer;
+.gambar-item img {
+  width: 100%; aspect-ratio: 1; object-fit: cover;
+  border-radius: 6px; border: 1px solid var(--border); display: block;
+}
+.gambar-hapus {
+  position: absolute; top: 6px; right: 6px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--terjual);
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
 }
 
-.upload-form { display: flex; gap: 12px; align-items: center; }
-.upload-form input { color: var(--text-muted); }
-.upload-form button {
-  padding: 8px 16px; border-radius: 6px; border: none;
-  background: var(--surface); border: 1px solid var(--border); color: var(--text); cursor: pointer;
+.upload-form { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.upload-form input {
+  color: var(--text-muted);
+  font-size: 13px;
+  flex: 1;
+  min-width: 200px;
 }
 </style>

@@ -42,6 +42,10 @@
           </table>
 
           <p class="deskripsi">{{ mobil.deskripsi || 'Tidak ada deskripsi tambahan.' }}</p>
+
+          <button class="cta-tanya" @click="bukaDenganPertanyaan(`Ceritakan lebih detail soal ${mobil.nama_mobil}`)">
+            Tanya soal mobil ini ke chatbot
+          </button>
         </div>
       </div>
     </main>
@@ -52,12 +56,14 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../api/axios';
+import { useChatbot } from '../composables/useChatbot';
 
 const route = useRoute();
 const mobil = ref({});
 const loading = ref(true);
 const error = ref(null);
 const apiOrigin = import.meta.env.VITE_API_BASE_URL.replace('/api', '');
+const { bukaDenganPertanyaan, state } = useChatbot();
 
 const gambarUtama = computed(() => mobil.value.GambarMobils?.[0]?.url_gambar);
 
@@ -69,6 +75,7 @@ onMounted(async () => {
   try {
     const res = await api.get(`/mobil/${route.params.id}`);
     mobil.value = res.data.data;
+    state.terbuka = true;
   } catch (err) {
     error.value = 'Mobil tidak ditemukan atau server backend tidak berjalan.';
   } finally {
@@ -134,5 +141,19 @@ onMounted(async () => {
 .specs td { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
 .specs td:first-child { color: var(--text-muted); width: 140px; }
 
-.deskripsi { color: var(--text-muted); line-height: 1.6; }
+.deskripsi { color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+
+.cta-tanya {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.cta-tanya:hover { background: var(--accent); color: #fff; }
 </style>

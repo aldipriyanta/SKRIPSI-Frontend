@@ -1,10 +1,10 @@
 <template>
   <div class="chatbot">
-    <button class="chatbot-toggle" @click="terbuka = !terbuka">
-      {{ terbuka ? '✕' : '💬' }}
+    <button class="chatbot-toggle" @click="state.terbuka = !state.terbuka">
+      {{ state.terbuka ? '✕' : '💬' }}
     </button>
 
-    <div v-if="terbuka" class="chatbot-panel">
+    <div v-if="state.terbuka" class="chatbot-panel">
       <div class="chatbot-header">Tanya Arjuna Motor</div>
 
       <div class="chatbot-messages" ref="messagesEl">
@@ -28,10 +28,11 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, watch } from 'vue';
 import api from '../api/axios';
+import { useChatbot } from '../composables/useChatbot';
 
-const terbuka = ref(false);
+const { state } = useChatbot();
 const pertanyaan = ref('');
 const pesanList = ref([]);
 const loading = ref(false);
@@ -40,6 +41,14 @@ const messagesEl = ref(null);
 const sessionId = crypto.randomUUID
   ? crypto.randomUUID()
   : `sesi-${Date.now()}-${Math.random()}`;
+
+watch(() => state.prefill, (teks) => {
+  if (teks) {
+    pertanyaan.value = teks;
+    kirimPesan();
+    state.prefill = '';
+  }
+});
 
 async function kirimPesan() {
   const teks = pertanyaan.value.trim();
