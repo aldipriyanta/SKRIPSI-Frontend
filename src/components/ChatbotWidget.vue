@@ -8,12 +8,8 @@
       <div class="chatbot-header">Tanya Arjuna Motor</div>
 
       <div class="chatbot-messages" ref="messagesEl">
-        <div
-          v-for="(pesan, i) in pesanList"
-          :key="i"
-          class="bubble"
-          :class="pesan.sender === 'customer' ? 'bubble-customer' : 'bubble-bot'"
-        >
+        <div v-for="(pesan, i) in pesanList" :key="i" class="bubble"
+          :class="pesan.sender === 'customer' ? 'bubble-customer' : 'bubble-bot'">
           {{ pesan.text }}
         </div>
         <div v-if="loading" class="bubble bubble-bot bubble-loading">Mengetik...</div>
@@ -134,22 +130,29 @@ async function scrollBawah() {
   font-size: 13px;
   line-height: 1.4;
 }
+
 .bubble-customer {
   align-self: flex-end;
   background: var(--accent);
   color: var(--bg);
 }
+
 .bubble-bot {
   align-self: flex-start;
   background: var(--bg);
   border: 1px solid var(--border);
 }
-.bubble-loading { color: var(--text-muted); font-style: italic; }
+
+.bubble-loading {
+  color: var(--text-muted);
+  font-style: italic;
+}
 
 .chatbot-input {
   display: flex;
   border-top: 1px solid var(--border);
 }
+
 .chatbot-input input {
   flex: 1;
   border: none;
@@ -159,6 +162,7 @@ async function scrollBawah() {
   font-size: 13px;
   outline: none;
 }
+
 .chatbot-input button {
   border: none;
   background: transparent;
@@ -167,5 +171,9 @@ async function scrollBawah() {
   padding: 0 16px;
   cursor: pointer;
 }
-.chatbot-input button:disabled { color: var(--text-muted); cursor: not-allowed; }
+
+.chatbot-input button:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
 </style>

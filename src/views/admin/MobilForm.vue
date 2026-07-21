@@ -8,7 +8,8 @@
 
     <main class="container form-wrap">
       <h1>{{ isEdit ? 'Edit Mobil' : 'Tambah Mobil' }}</h1>
-      <p class="form-subtitle">{{ isEdit ? 'Perbarui detail unit yang sudah terdaftar.' : 'Lengkapi detail unit baru untuk ditampilkan di katalog.' }}</p>
+      <p class="form-subtitle">{{ isEdit ? 'Perbarui detail unit yang sudah terdaftar.' : 'Lengkapi detail unit baru
+        untuk ditampilkan di katalog.' }} \</p>
 
       <form @submit.prevent="simpan" class="form-card">
         <section class="form-section">
@@ -31,7 +32,8 @@
               <label>Kategori</label>
               <select v-model="form.id_kategori" required>
                 <option value="" disabled>Pilih kategori</option>
-                <option v-for="k in daftarKategori" :key="k.id_kategori" :value="k.id_kategori">{{ k.nama_kategori }}</option>
+                <option v-for="k in daftarKategori" :key="k.id_kategori" :value="k.id_kategori">{{ k.nama_kategori }}
+                </option>
               </select>
             </div>
           </div>
@@ -97,7 +99,8 @@
 
           <div class="field">
             <label>Deskripsi</label>
-            <textarea v-model="form.deskripsi" rows="4" placeholder="Kondisi kendaraan, riwayat servis, atau info tambahan lainnya"></textarea>
+            <textarea v-model="form.deskripsi" rows="4"
+              placeholder="Kondisi kendaraan, riwayat servis, atau info tambahan lainnya"></textarea>
           </div>
         </section>
 
@@ -141,7 +144,7 @@ import api from '../../api/axios';
 const route = useRoute();
 const router = useRouter();
 const isEdit = computed(() => !!route.params.id);
-const apiOrigin = (import.meta.env.VITE_API_BASE_URL || '').replace('/api', '');
+const apiOrigin = import.meta.env.VITE_API_BASE_URL.replace('/api', '');
 
 const form = reactive({
   nama_mobil: '', id_merek: '', id_kategori: '', tipe: '', tahun: '',
@@ -219,13 +222,34 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.admin-topbar { border-bottom: 1px solid var(--border); padding: 16px 0; }
-.back-link { color: var(--text-muted); font-size: 14px; }
-.back-link:hover { color: var(--accent); }
+.admin-topbar {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+}
 
-.form-wrap { max-width: 640px; padding: 32px 24px 60px; }
-.form-wrap h1 { font-size: 28px; }
-.form-subtitle { color: var(--text-muted); font-size: 14px; margin: 6px 0 24px; }
+.back-link {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.back-link:hover {
+  color: var(--accent);
+}
+
+.form-wrap {
+  max-width: 640px;
+  padding: 32px 24px 60px;
+}
+
+.form-wrap h1 {
+  font-size: 28px;
+}
+
+.form-subtitle {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 6px 0 24px;
+}
 
 .form-card {
   background: var(--surface);
@@ -235,7 +259,7 @@ onMounted(async () => {
   margin-bottom: 24px;
 }
 
-.form-section + .form-section {
+.form-section+.form-section {
   margin-top: 28px;
   padding-top: 24px;
   border-top: 1px solid var(--border);
@@ -249,10 +273,25 @@ onMounted(async () => {
   margin: 0 0 16px;
 }
 
-.field { display: flex; flex-direction: column; margin-bottom: 16px; }
-.field:last-child { margin-bottom: 0; }
-.field label { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
-.field input, .field select, .field textarea {
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.field label {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.field input,
+.field select,
+.field textarea {
   padding: 10px 12px;
   border-radius: 6px;
   border: 1px solid var(--border);
@@ -261,11 +300,17 @@ onMounted(async () => {
   font-family: inherit;
   font-size: 14px;
 }
-.field input:focus, .field select:focus, .field textarea:focus {
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
   outline: none;
   border-color: var(--accent);
 }
-.field textarea { resize: vertical; }
+
+.field textarea {
+  resize: vertical;
+}
 
 .field-row {
   display: grid;
@@ -273,12 +318,25 @@ onMounted(async () => {
   gap: 16px;
   margin-bottom: 16px;
 }
-.field-row .field { margin-bottom: 0; }
 
-.error { color: var(--terjual); font-size: 13px; margin: 0 0 16px; }
+.field-row .field {
+  margin-bottom: 0;
+}
 
-.form-actions { display: flex; justify-content: flex-end; gap: 12px; }
-.btn-primary, .btn-secondary {
+.error {
+  color: var(--terjual);
+  font-size: 13px;
+  margin: 0 0 16px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-primary,
+.btn-secondary {
   padding: 10px 20px;
   border-radius: 6px;
   font-weight: 600;
@@ -287,13 +345,37 @@ onMounted(async () => {
   border: none;
   text-align: center;
 }
-.btn-primary { background: var(--accent); color: var(--bg); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-.btn-secondary { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
-.btn-secondary:hover { color: var(--text); border-color: var(--text-muted); }
 
-.gambar-card { margin-top: 8px; }
-.empty-note { color: var(--text-muted); font-size: 13px; margin: 0 0 16px; }
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.gambar-card {
+  margin-top: 8px;
+}
+
+.empty-note {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0 0 16px;
+}
 
 .gambar-grid {
   display: grid;
@@ -301,14 +383,26 @@ onMounted(async () => {
   gap: 12px;
   margin-bottom: 20px;
 }
-.gambar-item { position: relative; }
-.gambar-item img {
-  width: 100%; aspect-ratio: 1; object-fit: cover;
-  border-radius: 6px; border: 1px solid var(--border); display: block;
+
+.gambar-item {
+  position: relative;
 }
+
+.gambar-item img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  display: block;
+}
+
 .gambar-hapus {
-  position: absolute; top: 6px; right: 6px;
-  width: 22px; height: 22px;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.7);
   color: var(--terjual);
@@ -318,7 +412,13 @@ onMounted(async () => {
   line-height: 1;
 }
 
-.upload-form { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.upload-form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .upload-form input {
   color: var(--text-muted);
   font-size: 13px;
