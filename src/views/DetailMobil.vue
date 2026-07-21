@@ -62,7 +62,7 @@ const route = useRoute();
 const mobil = ref({});
 const loading = ref(true);
 const error = ref(null);
-const apiOrigin = import.meta.env.VITE_API_BASE_URL.replace('/api', '');
+const apiOrigin = (import.meta.env.VITE_API_BASE_URL || '').replace('/api', '');
 const { bukaDenganPertanyaan, state } = useChatbot();
 
 const gambarUtama = computed(() => mobil.value.GambarMobils?.[0]?.url_gambar);

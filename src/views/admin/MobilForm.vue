@@ -141,7 +141,7 @@ import api from '../../api/axios';
 const route = useRoute();
 const router = useRouter();
 const isEdit = computed(() => !!route.params.id);
-const apiOrigin = import.meta.env.VITE_API_BASE_URL.replace('/api', '');
+const apiOrigin = (import.meta.env.VITE_API_BASE_URL || '').replace('/api', '');
 
 const form = reactive({
   nama_mobil: '', id_merek: '', id_kategori: '', tipe: '', tahun: '',

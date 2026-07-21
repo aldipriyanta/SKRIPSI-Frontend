@@ -87,7 +87,7 @@ const daftarMobil = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const filterKategori = ref(null);
-const apiOrigin = import.meta.env.VITE_API_BASE_URL.replace('/api', '');
+const apiOrigin = (import.meta.env.VITE_API_BASE_URL || '').replace('/api', '');
 const { bukaDenganPertanyaan } = useChatbot();
 
 const jumlahTersedia = computed(
