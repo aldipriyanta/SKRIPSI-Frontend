@@ -4,6 +4,7 @@ import DetailMobil from '../views/DetailMobil.vue';
 import Login from '../views/admin/Login.vue';
 import Dashboard from '../views/admin/Dashboard.vue';
 import MobilForm from '../views/admin/MobilForm.vue';
+import Bandingkan from '../views/Bandingkan.vue';
 
 const routes = [
   { path: '/', name: 'daftar-mobil', component: DaftarMobil },
@@ -12,6 +13,7 @@ const routes = [
   { path: '/admin', name: 'admin-dashboard', component: Dashboard, meta: { requiresAuth: true } },
   { path: '/admin/mobil/tambah', name: 'admin-mobil-tambah', component: MobilForm, meta: { requiresAuth: true } },
   { path: '/admin/mobil/:id', name: 'admin-mobil-edit', component: MobilForm, meta: { requiresAuth: true } },
+  { path: '/bandingkan', name: 'bandingkan', component: Bandingkan },
 ];
 
 const router = createRouter({
@@ -25,5 +27,5 @@ router.beforeEach((to) => {
     return { name: 'admin-login' };
   }
 });
-//asd
+
 export default router;

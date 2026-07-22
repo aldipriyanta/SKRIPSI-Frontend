@@ -21,14 +21,11 @@
         <div class="hero-text reveal in-view">
           <span class="eyebrow">Unit siap jalan &middot; harga transparan</span>
           <h1>Temukan mobil bekas<br /><span class="gradient-text">yang siap jalan</span> hari ini.</h1>
-          <p>Semua unit sudah diperiksa menyeluruh, harga sudah final di depan, dan kalau masih ragu tinggal tanya chatbot kami kapan saja.</p>
+          <p>Semua unit sudah diperiksa menyeluruh, harga sudah final di depan, dan kalau masih ragu tinggal tanya
+            chatbot kami kapan saja.</p>
         </div>
 
-        <div
-          class="hero-stat glass"
-          @mousemove="(e) => tiltMove(e, 10)"
-          @mouseleave="tiltLeave"
-        >
+        <div class="hero-stat glass" @mousemove="(e) => tiltMove(e, 10)" @mouseleave="tiltLeave">
           <span class="hero-stat-number">{{ jumlahTersedia }}</span>
           <span class="hero-stat-label">Unit tersedia sekarang</span>
           <div class="hero-stat-glow"></div>
@@ -54,15 +51,9 @@
       </div>
 
       <div v-else class="grid">
-        <RouterLink
-          v-for="(mobil, i) in mobilTersaring"
-          :key="mobil.id_mobil"
-          :to="`/mobil/${mobil.id_mobil}`"
-          class="card reveal"
-          :style="{ transitionDelay: `${(i % 8) * 60}ms` }"
-          @mousemove="(e) => tiltMove(e, 6)"
-          @mouseleave="tiltLeave"
-        >
+        <RouterLink v-for="(mobil, i) in mobilTersaring" :key="mobil.id_mobil" :to="`/mobil/${mobil.id_mobil}`"
+          class="card reveal" :style="{ transitionDelay: `${(i % 8) * 60}ms` }" @mousemove="(e) => tiltMove(e, 6)"
+          @mouseleave="tiltLeave">
           <div class="card-image">
             <img v-if="mobil.GambarMobils && mobil.GambarMobils[0]"
               :src="`${apiOrigin}${mobil.GambarMobils[0].url_gambar}`" :alt="mobil.nama_mobil" loading="lazy" />
@@ -72,6 +63,11 @@
             <span class="plate" :class="mobil.status_stok === 'tersedia' ? 'plate-tersedia' : 'plate-terjual'">
               {{ mobil.status_stok === 'tersedia' ? 'TERSEDIA' : 'TERJUAL' }}
             </span>
+
+            <label class="compare-checkbox" @click.stop.prevent="toggleMobil(mobil.id_mobil)">
+              <input type="checkbox" :checked="isDipilih(mobil.id_mobil)" readonly />
+              Bandingkan
+            </label>
           </div>
 
           <div class="card-body">
@@ -84,13 +80,22 @@
         </RouterLink>
       </div>
     </main>
+    <div v-if="compareState.idTerpilih.length > 0" class="compare-bar">
+      <span>{{ compareState.idTerpilih.length }} / {{ MAKS_BANDINGKAN }} mobil dipilih</span>
+      <button class="compare-btn" :disabled="compareState.idTerpilih.length < 2" @click="bukaPerbandingan">
+        Bandingkan Sekarang
+      </button>
+    </div>
   </div>
 </template>
+
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue';
 import api from '../api/axios';
 import { useChatbot } from '../composables/useChatbot';
 import { tiltMove, tiltLeave, observeReveal } from '../composables/useTilt';
+import { useRouter } from 'vue-router';
+import { useCompare } from '../composables/useCompare';
 
 const daftarMobil = ref([]);
 const loading = ref(true);
@@ -99,6 +104,8 @@ const filterKategori = ref(null);
 const apiOrigin = import.meta.env.VITE_API_BASE_URL.replace('/api', '');
 const { bukaDenganPertanyaan } = useChatbot();
 const mainEl = ref(null);
+const router = useRouter();
+const { state: compareState, toggleMobil, isDipilih, MAKS_BANDINGKAN } = useCompare();
 
 const jumlahTersedia = computed(
   () => daftarMobil.value.filter((m) => m.status_stok === 'tersedia').length
@@ -116,6 +123,10 @@ const mobilTersaring = computed(() => {
 
 function formatHarga(harga) {
   return new Intl.NumberFormat('id-ID').format(harga);
+}
+
+function bukaPerbandingan() {
+  router.push(`/bandingkan?ids=${compareState.idTerpilih.join(',')}`);
 }
 
 onMounted(async () => {
@@ -159,21 +170,25 @@ onMounted(async () => {
   transform: rotateX(-18deg) rotateY(28deg);
   flex-shrink: 0;
 }
+
 .face {
   position: absolute;
   inset: 0;
 }
+
 .face-top {
   background: linear-gradient(135deg, var(--accent-2), var(--accent));
   transform: translateZ(6px);
   border-radius: 3px;
 }
+
 .face-left {
   background: var(--accent);
   opacity: 0.55;
   transform: rotateY(-90deg) translateZ(6px);
   border-radius: 3px;
 }
+
 .face-right {
   background: var(--violet);
   opacity: 0.5;
@@ -256,6 +271,7 @@ onMounted(async () => {
   transition: opacity 0.25s ease;
   pointer-events: none;
 }
+
 .hero-stat:hover .hero-stat-glow {
   opacity: 1;
 }
@@ -446,13 +462,82 @@ onMounted(async () => {
 .card:hover .card-cta {
   color: var(--accent);
 }
+
 .card:hover .arrow {
   transform: translateX(4px);
 }
 
+.compare-checkbox {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(8, 8, 12, 0.7);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.compare-checkbox input {
+  margin: 0;
+  cursor: pointer;
+}
+
+.compare-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 10px 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-lg);
+  z-index: 90;
+  backdrop-filter: blur(16px);
+}
+
+.compare-bar span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.compare-btn {
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  color: #191207;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.compare-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 640px) {
-  .hero-text h1 { font-size: 36px; }
-  .hero-stat { padding: 26px 34px; }
-  .hero-stat-number { font-size: 40px; }
+  .hero-text h1 {
+    font-size: 36px;
+  }
+
+  .hero-stat {
+    padding: 26px 34px;
+  }
+
+  .hero-stat-number {
+    font-size: 40px;
+  }
 }
 </style>
