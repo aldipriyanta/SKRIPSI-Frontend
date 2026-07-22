@@ -70,7 +70,7 @@ async function hapusMobil(id) {
   if (!confirm('Yakin hapus data mobil ini?')) return;
   await api.delete(`/mobil/${id}`);
   await muatData();
-}
+}   
 
 function handleLogout() {
   logout();
