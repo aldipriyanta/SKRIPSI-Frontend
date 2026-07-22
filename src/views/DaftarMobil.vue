@@ -1,27 +1,43 @@
 <template>
   <div class="page">
-    <header class="topbar">
+    <header class="topbar glass">
       <div class="container topbar-inner">
-        <span class="brand">ARJUNA MOTOR</span>
-        <span class="tagline">Showroom Mobil Bekas Terpercaya</span>
+        <div class="brand-mark">
+          <span class="logo-cube" aria-hidden="true">
+            <span class="face face-top"></span>
+            <span class="face face-left"></span>
+            <span class="face face-right"></span>
+          </span>
+          <div class="brand-text">
+            <span class="brand">ARJUNA MOTOR</span>
+            <span class="tagline">Showroom Mobil Bekas Terpercaya</span>
+          </div>
+        </div>
       </div>
     </header>
 
     <section class="hero">
       <div class="container hero-inner">
-        <div class="hero-text">
-          <h1>Temukan mobil bekas<br />yang siap jalan hari ini.</h1>
-          <p>Semua unit sudah diperiksa, harga transparan, tinggal tanya chatbot kalau ragu.</p>
+        <div class="hero-text reveal in-view">
+          <span class="eyebrow">Unit siap jalan &middot; harga transparan</span>
+          <h1>Temukan mobil bekas<br /><span class="gradient-text">yang siap jalan</span> hari ini.</h1>
+          <p>Semua unit sudah diperiksa menyeluruh, harga sudah final di depan, dan kalau masih ragu tinggal tanya chatbot kami kapan saja.</p>
         </div>
-        <div class="hero-stat">
+
+        <div
+          class="hero-stat glass"
+          @mousemove="(e) => tiltMove(e, 10)"
+          @mouseleave="tiltLeave"
+        >
           <span class="hero-stat-number">{{ jumlahTersedia }}</span>
           <span class="hero-stat-label">Unit tersedia sekarang</span>
+          <div class="hero-stat-glow"></div>
         </div>
       </div>
     </section>
 
-    <main class="container">
-      <div class="filter-row">
+    <main class="container" ref="mainEl">
+      <div class="filter-row reveal">
         <button class="chip" :class="{ active: filterKategori === null }" @click="filterKategori = null">
           Semua
         </button>
@@ -38,11 +54,20 @@
       </div>
 
       <div v-else class="grid">
-        <RouterLink v-for="mobil in mobilTersaring" :key="mobil.id_mobil" :to="`/mobil/${mobil.id_mobil}`" class="card">
+        <RouterLink
+          v-for="(mobil, i) in mobilTersaring"
+          :key="mobil.id_mobil"
+          :to="`/mobil/${mobil.id_mobil}`"
+          class="card reveal"
+          :style="{ transitionDelay: `${(i % 8) * 60}ms` }"
+          @mousemove="(e) => tiltMove(e, 6)"
+          @mouseleave="tiltLeave"
+        >
           <div class="card-image">
             <img v-if="mobil.GambarMobils && mobil.GambarMobils[0]"
-              :src="`${apiOrigin}${mobil.GambarMobils[0].url_gambar}`" :alt="mobil.nama_mobil" />
+              :src="`${apiOrigin}${mobil.GambarMobils[0].url_gambar}`" :alt="mobil.nama_mobil" loading="lazy" />
             <div v-else class="card-image-placeholder">Belum ada foto</div>
+            <div class="card-image-sheen"></div>
 
             <span class="plate" :class="mobil.status_stok === 'tersedia' ? 'plate-tersedia' : 'plate-terjual'">
               {{ mobil.status_stok === 'tersedia' ? 'TERSEDIA' : 'TERJUAL' }}
@@ -54,18 +79,18 @@
             <p class="card-meta">{{ mobil.Merek?.nama_merek }} · {{ mobil.Kategori?.nama_kategori }} · {{ mobil.tahun }}
             </p>
             <p class="card-price">Rp {{ formatHarga(mobil.harga) }}</p>
-            <span class="card-cta">Lihat Detail &rarr;</span>
+            <span class="card-cta">Lihat Detail <span class="arrow">&rarr;</span></span>
           </div>
         </RouterLink>
       </div>
     </main>
   </div>
 </template>
-<!-- asd -->
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import api from '../api/axios';
 import { useChatbot } from '../composables/useChatbot';
+import { tiltMove, tiltLeave, observeReveal } from '../composables/useTilt';
 
 const daftarMobil = ref([]);
 const loading = ref(true);
@@ -73,6 +98,7 @@ const error = ref(null);
 const filterKategori = ref(null);
 const apiOrigin = import.meta.env.VITE_API_BASE_URL.replace('/api', '');
 const { bukaDenganPertanyaan } = useChatbot();
+const mainEl = ref(null);
 
 const jumlahTersedia = computed(
   () => daftarMobil.value.filter((m) => m.status_stok === 'tersedia').length
@@ -95,128 +121,194 @@ function formatHarga(harga) {
 onMounted(async () => {
   try {
     const res = await api.get('/mobil');
-
-    console.log("Response:", res);
-    console.log("Response Data:", res.data);
-
-    daftarMobil.value = Array.isArray(res.data.data)
-      ? res.data.data
-      : [];
-
+    daftarMobil.value = Array.isArray(res.data.data) ? res.data.data : [];
   } catch (err) {
-    console.error("Axios Error:", err);
-
-    if (err.response) {
-      console.log("Status:", err.response.status);
-      console.log("Data:", err.response.data);
-    }
-
     error.value = 'Gagal memuat data mobil.';
   } finally {
     loading.value = false;
+    await nextTick();
+    if (mainEl.value) observeReveal(mainEl.value);
   }
 });
 </script>
 
 <style scoped>
 .topbar {
-  border-bottom: 1px solid var(--border);
-  padding: 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 16px 0;
 }
 
 .topbar-inner {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  align-items: center;
+}
+
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-cube {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  transform-style: preserve-3d;
+  transform: rotateX(-18deg) rotateY(28deg);
+  flex-shrink: 0;
+}
+.face {
+  position: absolute;
+  inset: 0;
+}
+.face-top {
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  transform: translateZ(6px);
+  border-radius: 3px;
+}
+.face-left {
+  background: var(--accent);
+  opacity: 0.55;
+  transform: rotateY(-90deg) translateZ(6px);
+  border-radius: 3px;
+}
+.face-right {
+  background: var(--violet);
+  opacity: 0.5;
+  transform: rotateX(90deg) translateZ(6px);
+  border-radius: 3px;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
 }
 
 .brand {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: 1px;
-  color: var(--accent);
+  letter-spacing: 0.5px;
 }
 
 .tagline {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-muted);
 }
 
 .hero {
-  background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
-  border-bottom: 1px solid var(--border);
-  padding: 56px 0;
+  padding: 88px 0 64px;
+  position: relative;
 }
 
 .hero-inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 40px;
+  gap: 48px;
   flex-wrap: wrap;
 }
 
+.eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+
 .hero-text h1 {
-  font-size: 42px;
-  line-height: 1.1;
-  max-width: 480px;
+  font-size: 52px;
+  line-height: 1.08;
+  max-width: 560px;
 }
 
 .hero-text p {
   color: var(--text-muted);
-  margin-top: 12px;
-  max-width: 420px;
+  margin-top: 18px;
+  max-width: 440px;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .hero-stat {
+  position: relative;
   text-align: center;
-  border-left: 2px solid var(--accent);
-  padding-left: 28px;
+  padding: 36px 46px;
+  border-radius: var(--radius-lg);
+  transform-style: preserve-3d;
+  transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.25s ease-out;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.hero-stat-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255, 138, 61, 0.25), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.hero-stat:hover .hero-stat-glow {
+  opacity: 1;
 }
 
 .hero-stat-number {
   display: block;
-  font-family: var(--font-display);
-  font-size: 56px;
-  font-weight: 700;
-  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 52px;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   line-height: 1;
 }
 
 .hero-stat-label {
   font-size: 13px;
   color: var(--text-muted);
+  margin-top: 8px;
+  display: block;
 }
 
 .filter-row {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin: 32px 0 24px;
+  margin: 8px 0 28px;
 }
 
 .chip {
   border: 1px solid var(--border);
-  background: transparent;
+  background: var(--surface);
   color: var(--text-muted);
-  padding: 7px 16px;
+  padding: 8px 18px;
   border-radius: 999px;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .chip:hover {
   border-color: var(--accent);
   color: var(--text);
+  transform: translateY(-1px);
 }
 
 .chip.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--bg);
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  border-color: transparent;
+  color: #191207;
   font-weight: 600;
+  box-shadow: var(--shadow-glow);
 }
 
 .state-text {
@@ -230,30 +322,33 @@ onMounted(async () => {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
-  padding-bottom: 60px;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 22px;
+  padding-bottom: 70px;
 }
 
 .card {
   display: block;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  backdrop-filter: blur(16px);
+  transform-style: preserve-3d;
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0);
+  transition: transform 0.25s ease-out, border-color 0.2s ease, box-shadow 0.25s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-lg);
 }
 
 .card-image {
   position: relative;
   aspect-ratio: 4 / 3;
-  background: #16171a;
+  background: #101014;
+  overflow: hidden;
 }
 
 .card-image img {
@@ -261,6 +356,18 @@ onMounted(async () => {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover .card-image img {
+  transform: scale(1.06);
+}
+
+.card-image-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  pointer-events: none;
 }
 
 .card-image-placeholder {
@@ -274,16 +381,17 @@ onMounted(async () => {
 
 .plate {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
-  font-family: var(--font-display);
-  font-size: 12px;
+  bottom: 12px;
+  left: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 1.5px;
-  padding: 3px 10px;
-  border-radius: 4px;
-  border: 1.5px solid;
-  background: var(--bg);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid;
+  backdrop-filter: blur(6px);
+  background: rgba(8, 8, 12, 0.55);
 }
 
 .plate-tersedia {
@@ -297,56 +405,54 @@ onMounted(async () => {
 }
 
 .card-body {
-  padding: 14px 16px 16px;
+  padding: 16px 18px 18px;
 }
 
 .card-body h3 {
-  font-size: 20px;
+  font-size: 19px;
 }
 
 .card-meta {
   color: var(--text-muted);
   font-size: 13px;
-  margin: 4px 0 10px;
+  margin: 5px 0 12px;
 }
 
 .card-price {
-  color: var(--accent);
+  color: var(--accent-2);
   font-size: 17px;
   font-weight: 600;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
+  font-family: var(--font-mono);
 }
 
 .card-cta {
-  display: inline-block;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 13px;
   color: var(--text-muted);
   border-top: 1px solid var(--border);
-  padding-top: 10px;
+  padding-top: 12px;
   width: 100%;
-  transition: color 0.15s ease;
+  transition: color 0.2s ease;
+}
+
+.arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
 }
 
 .card:hover .card-cta {
   color: var(--accent);
 }
-
-.cta-tanya {
-  margin-top: 20px;
-  width: 100%;
-  padding: 14px;
-  border-radius: 8px;
-  border: 1.5px solid var(--accent);
-  background: transparent;
-  color: var(--accent);
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+.card:hover .arrow {
+  transform: translateX(4px);
 }
 
-.cta-tanya:hover {
-  background: var(--accent);
-  color: var(--bg);
+@media (max-width: 640px) {
+  .hero-text h1 { font-size: 36px; }
+  .hero-stat { padding: 26px 34px; }
+  .hero-stat-number { font-size: 40px; }
 }
 </style>

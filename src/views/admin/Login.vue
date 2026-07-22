@@ -1,6 +1,6 @@
 <template>
   <div class="login-page">
-    <form class="login-box" @submit.prevent="handleLogin">
+    <form class="login-box glass" @submit.prevent="handleLogin">
       <h1>Login Admin</h1>
       <p class="subtitle">Arjuna Motor</p>
 
@@ -51,34 +51,39 @@ async function handleLogin() {
   justify-content: center;
 }
 .login-box {
-  width: 320px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 32px;
+  width: 340px;
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  box-shadow: var(--shadow-lg);
 }
-.login-box h1 { font-size: 26px; }
-.subtitle { color: var(--text-muted); font-size: 13px; margin: 0 0 20px; }
+.login-box h1 { font-family: var(--font-display); font-size: 26px; }
+.subtitle { color: var(--text-muted); font-size: 13px; margin: 0 0 22px; }
 label { display: block; font-size: 13px; color: var(--text-muted); margin: 14px 0 6px; }
 input {
   width: 100%;
-  padding: 10px;
-  border-radius: 6px;
+  padding: 11px 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--bg-soft);
   color: var(--text);
+  outline: none;
+  transition: border-color 0.2s ease;
 }
+input:focus { border-color: var(--accent); }
 .error { color: var(--terjual); font-size: 13px; margin-top: 12px; }
 button {
   width: 100%;
-  margin-top: 20px;
-  padding: 10px;
-  border-radius: 6px;
+  margin-top: 22px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
   border: none;
-  background: var(--accent);
-  color: var(--bg);
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  color: #191207;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: var(--shadow-glow);
+  transition: transform 0.2s ease;
 }
-button:disabled { opacity: 0.6; cursor: not-allowed; }
+button:hover:not(:disabled) { transform: translateY(-1px); }
+button:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
 </style>

@@ -17,7 +17,12 @@
       <table v-else class="admin-table">
         <thead>
           <tr>
-            <th>Nama</th><th>Merek</th><th>Kategori</th><th>Harga</th><th>Status</th><th></th>
+            <th>Nama</th>
+            <th>Merek</th>
+            <th>Kategori</th>
+            <th>Harga</th>
+            <th>Status</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -56,7 +61,8 @@ function formatHarga(angka) {
 async function muatData() {
   loading.value = true;
   const res = await api.get('/mobil');
-  daftarMobil.value = res.data.data;
+  const data = Array.isArray(res.data.data) ? res.data.data : [];
+  daftarMobil.value = [...data].sort((a, b) => b.id_mobil - a.id_mobil);
   loading.value = false;
 }
 
@@ -75,29 +81,95 @@ onMounted(muatData);
 </script>
 <!-- asd -->
 <style scoped>
-.admin-topbar { border-bottom: 1px solid var(--border); padding: 16px 0; }
-.topbar-inner { display: flex; justify-content: space-between; align-items: center; }
-.brand { font-family: var(--font-display); color: var(--accent); font-weight: 700; letter-spacing: 1px; }
+.admin-topbar {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+}
+
+.topbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-family: var(--font-display);
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
 .logout-btn {
-  background: transparent; border: 1px solid var(--border); color: var(--text-muted);
-  padding: 6px 14px; border-radius: 6px; cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.header-row { display: flex; justify-content: space-between; align-items: center; margin: 32px 0 20px; }
-.header-row h1 { font-size: 28px; }
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 32px 0 20px;
+}
+
+.header-row h1 {
+  font-size: 28px;
+}
+
 .btn-primary {
-  background: var(--accent); color: var(--bg); padding: 10px 18px;
-  border-radius: 6px; font-weight: 600; font-size: 14px;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  color: #191207;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: var(--shadow-glow);
 }
 
-.state-text { color: var(--text-muted); padding: 40px 0; }
-
-.admin-table { width: 100%; border-collapse: collapse; margin-bottom: 60px; }
-.admin-table th, .admin-table td {
-  text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 14px;
+.state-text {
+  color: var(--text-muted);
+  padding: 40px 0;
 }
-.admin-table th { color: var(--text-muted); font-weight: 500; font-size: 12px; text-transform: uppercase; }
-.actions { display: flex; gap: 12px; }
-.actions a { color: var(--accent); }
-.actions button { background: none; border: none; color: var(--terjual); cursor: pointer; padding: 0; font-size: 14px; }
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 60px;
+}
+
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.admin-table th {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.actions a {
+  color: var(--accent);
+}
+
+.actions button {
+  background: none;
+  border: none;
+  color: var(--terjual);
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+}
 </style>

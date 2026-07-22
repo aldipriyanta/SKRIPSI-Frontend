@@ -8,9 +8,10 @@
 
     <main class="container form-wrap">
       <h1>{{ isEdit ? 'Edit Mobil' : 'Tambah Mobil' }}</h1>
-        <p class="form-subtitle">
-          {{ isEdit ? 'Perbarui detail unit yang sudah terdaftar.' : 'Lengkapi detail unit baru untuk ditampilkan di katalog.' }}
-        </p>
+      <p class="form-subtitle">
+        {{ isEdit ? 'Perbarui detail unit yang sudah terdaftar.' :
+          'Lengkapi detail unit baru untuk ditampilkan dikatalog.' }}
+      </p>
 
       <form @submit.prevent="simpan" class="form-card">
         <section class="form-section">
@@ -107,32 +108,32 @@
 
         <p v-if="error" class="error">{{ error }}</p>
 
+        <section v-if="isEdit" class="form-section foto-section">
+          <h2 class="section-title">Foto Mobil</h2>
+
+          <div v-if="daftarGambar.length" class="gambar-grid">
+            <div v-for="g in daftarGambar" :key="g.id_gambar" class="gambar-item">
+              <img :src="`${apiOrigin}${g.url_gambar}`" />
+              <button type="button" class="gambar-hapus" @click="hapusGambar(g.id_gambar)"
+                aria-label="Hapus foto">&times;</button>
+            </div>
+          </div>
+          <p v-else class="empty-note">Belum ada foto untuk mobil ini.</p>
+
+          <div class="field">
+            <label>Tambah foto baru (opsional)</label>
+            <input type="file" accept="image/png, image/jpeg, image/webp" @change="pilihFile" />
+            <p class="field-hint">Foto akan diunggah otomatis saat kamu klik "Simpan Data" di bawah.</p>
+          </div>
+        </section>
+
         <div class="form-actions">
           <RouterLink to="/admin" class="btn-secondary">Batal</RouterLink>
           <button type="submit" class="btn-primary" :disabled="saving">
-            {{ saving ? 'Menyimpan...' : 'Simpan Data' }}
+            {{ saving ? (fileTerpilih ? 'Menyimpan & mengunggah...' : 'Menyimpan...') : 'Simpan Data' }}
           </button>
         </div>
       </form>
-
-      <section v-if="isEdit" class="form-card gambar-card">
-        <h2 class="section-title">Foto Mobil</h2>
-
-        <div v-if="daftarGambar.length" class="gambar-grid">
-          <div v-for="g in daftarGambar" :key="g.id_gambar" class="gambar-item">
-            <img :src="`${apiOrigin}${g.url_gambar}`" />
-            <button class="gambar-hapus" @click="hapusGambar(g.id_gambar)" aria-label="Hapus foto">&times;</button>
-          </div>
-        </div>
-        <p v-else class="empty-note">Belum ada foto untuk mobil ini.</p>
-
-        <form @submit.prevent="uploadGambar" class="upload-form">
-          <input type="file" accept="image/png, image/jpeg, image/webp" @change="pilihFile" required />
-          <button type="submit" class="btn-secondary" :disabled="uploading">
-            {{ uploading ? 'Mengunggah...' : 'Upload Foto' }}
-          </button>
-        </form>
-      </section>
     </main>
   </div>
 </template>
@@ -157,7 +158,6 @@ const daftarKategori = ref([]);
 const daftarGambar = ref([]);
 const error = ref(null);
 const saving = ref(false);
-const uploading = ref(false);
 const fileTerpilih = ref(null);
 
 async function muatReferensi() {
@@ -179,6 +179,7 @@ async function simpan() {
   try {
     if (isEdit.value) {
       await api.put(`/mobil/${route.params.id}`, form);
+      await uploadFotoJikaAda();
       router.push('/admin');
     } else {
       const res = await api.post('/mobil', form);
@@ -192,7 +193,15 @@ async function simpan() {
 }
 
 function pilihFile(e) {
-  fileTerpilih.value = e.target.files[0];
+  fileTerpilih.value = e.target.files[0] || null;
+}
+
+async function uploadFotoJikaAda() {
+  if (!fileTerpilih.value) return;
+  const formData = new FormData();
+  formData.append('gambar', fileTerpilih.value);
+  await api.post(`/mobil/${route.params.id}/gambar`, formData);
+  fileTerpilih.value = null;
 }
 
 async function uploadGambar() {
@@ -224,13 +233,18 @@ onMounted(async () => {
 
 <style scoped>
 .admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   border-bottom: 1px solid var(--border);
   padding: 16px 0;
+  background: var(--bg);
 }
 
 .back-link {
   color: var(--text-muted);
   font-size: 14px;
+  transition: color 0.2s ease;
 }
 
 .back-link:hover {
@@ -255,9 +269,11 @@ onMounted(async () => {
 .form-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 24px;
-  margin-bottom: 24px;
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(16px);
+  padding: 28px;
+  margin-bottom: 32px;
+  /* sebelumnya 24px — jarak antar card diperbesar */
 }
 
 .form-section+.form-section {
@@ -293,10 +309,11 @@ onMounted(async () => {
 .field input,
 .field select,
 .field textarea {
-  padding: 10px 12px;
-  border-radius: 6px;
+  padding: 11px 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--bg-soft);
+  /* sebelumnya var(--bg) */
   color: var(--text);
   font-family: inherit;
   font-size: 14px;
@@ -334,27 +351,37 @@ onMounted(async () => {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
 }
 
 .btn-primary,
 .btn-secondary {
-  padding: 10px 20px;
-  border-radius: 6px;
+  padding: 11px 22px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   border: none;
   text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-primary {
-  background: var(--accent);
-  color: var(--bg);
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  color: #191207;
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
 }
 
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .btn-secondary {
@@ -368,8 +395,23 @@ onMounted(async () => {
   border-color: var(--text-muted);
 }
 
-.gambar-card {
-  margin-top: 8px;
+.foto-section .field {
+  margin-top: 4px;
+}
+
+.foto-section input[type='file'] {
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.field-hint {
+  font-size: 12px;
+  color: var(--text-faint);
+  margin: 8px 0 0;
 }
 
 .empty-note {
@@ -413,17 +455,22 @@ onMounted(async () => {
   line-height: 1;
 }
 
-.upload-form {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
+.foto-section .field {
+  margin-top: 4px;
 }
 
-.upload-form input {
+.foto-section input[type='file'] {
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
   color: var(--text-muted);
   font-size: 13px;
-  flex: 1;
-  min-width: 200px;
+}
+
+.field-hint {
+  font-size: 12px;
+  color: var(--text-faint);
+  margin: 8px 0 0;
 }
 </style>
