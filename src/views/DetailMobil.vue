@@ -11,17 +11,8 @@
       <div v-else-if="error" class="state-text error">{{ error }}</div>
 
       <div v-else class="detail">
-        <div
-          class="gallery"
-          @mousemove="(e) => tiltMove(e, 5)"
-          @mouseleave="tiltLeave"
-        >
-          <img
-            v-if="gambarUtama"
-            :src="`${apiOrigin}${gambarUtama}`"
-            :alt="mobil.nama_mobil"
-            class="gallery-main"
-          />
+        <div class="gallery" @mousemove="(e) => tiltMove(e, 5)" @mouseleave="tiltLeave">
+          <img v-if="gambarUtama" :src="`${apiOrigin}${gambarUtama}`" :alt="mobil.nama_mobil" class="gallery-main" />
           <div v-else class="gallery-placeholder">Belum ada foto</div>
           <div class="gallery-sheen"></div>
         </div>
@@ -37,7 +28,7 @@
           <div class="specs">
             <div class="spec-item">
               <span class="spec-label">Merek</span>
-              <span class="spec-value">{{ mobil.Merek?.nama_merek || '-' }}</span>
+              <span class="spec-value">{{ mobil.nama_merek || '-' }}</span>
             </div>
             <div class="spec-item">
               <span class="spec-label">Kategori</span>
@@ -99,7 +90,6 @@ onMounted(async () => {
   try {
     const res = await api.get(`/mobil/${route.params.id}`);
     mobil.value = res.data.data;
-    state.terbuka = true;
   } catch (err) {
     error.value = 'Mobil tidak ditemukan atau server backend tidak berjalan.';
   } finally {
@@ -109,12 +99,31 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.topbar { position: sticky; top: 0; z-index: 50; padding: 18px 0; }
-.back-link { color: var(--text-muted); font-size: 14px; transition: color 0.2s ease; }
-.back-link:hover { color: var(--accent); }
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 18px 0;
+}
 
-.state-text { color: var(--text-muted); padding: 60px 0; }
-.state-text.error { color: var(--terjual); }
+.back-link {
+  color: var(--text-muted);
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--accent);
+}
+
+.state-text {
+  color: var(--text-muted);
+  padding: 60px 0;
+}
+
+.state-text.error {
+  color: var(--terjual);
+}
 
 .detail {
   display: grid;
@@ -123,8 +132,11 @@ onMounted(async () => {
   padding: 40px 0 70px;
   align-items: start;
 }
+
 @media (max-width: 780px) {
-  .detail { grid-template-columns: 1fr; }
+  .detail {
+    grid-template-columns: 1fr;
+  }
 }
 
 .gallery {
@@ -144,12 +156,14 @@ onMounted(async () => {
   object-fit: cover;
   display: block;
 }
+
 .gallery-sheen {
   position: absolute;
   inset: 0;
   background: linear-gradient(200deg, rgba(255, 255, 255, 0.06), transparent 40%);
   pointer-events: none;
 }
+
 .gallery-placeholder {
   aspect-ratio: 4 / 3;
   background: var(--surface);
@@ -179,10 +193,23 @@ onMounted(async () => {
   border: 1px solid;
   margin-bottom: 18px;
 }
-.plate-tersedia { color: var(--tersedia); border-color: var(--tersedia); }
-.plate-terjual { color: var(--terjual); border-color: var(--terjual); }
 
-.info h1 { font-size: 32px; margin-bottom: 10px; line-height: 1.15; }
+.plate-tersedia {
+  color: var(--tersedia);
+  border-color: var(--tersedia);
+}
+
+.plate-terjual {
+  color: var(--terjual);
+  border-color: var(--terjual);
+}
+
+.info h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+  line-height: 1.15;
+}
+
 .price {
   font-family: var(--font-mono);
   color: var(--accent-2);
@@ -201,6 +228,7 @@ onMounted(async () => {
   overflow: hidden;
   margin-bottom: 26px;
 }
+
 .spec-item {
   background: var(--bg-soft);
   padding: 12px 14px;
@@ -208,11 +236,30 @@ onMounted(async () => {
   flex-direction: column;
   gap: 4px;
 }
-.spec-wide { grid-column: 1 / -1; }
-.spec-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-faint); }
-.spec-value { font-size: 14px; color: var(--text); font-weight: 500; }
 
-.deskripsi { color: var(--text-muted); line-height: 1.7; margin-bottom: 26px; font-size: 14px; }
+.spec-wide {
+  grid-column: 1 / -1;
+}
+
+.spec-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+}
+
+.spec-value {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.deskripsi {
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 26px;
+  font-size: 14px;
+}
 
 .cta-tanya {
   width: 100%;
@@ -227,5 +274,9 @@ onMounted(async () => {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: var(--shadow-glow);
 }
-.cta-tanya:hover { transform: translateY(-2px); box-shadow: 0 12px 34px rgba(255, 138, 61, 0.35); }
+
+.cta-tanya:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 34px rgba(255, 138, 61, 0.35);
+}
 </style>

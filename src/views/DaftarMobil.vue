@@ -111,15 +111,6 @@ const jumlahTersedia = computed(
   () => daftarMobil.value.filter((m) => m.status_stok === 'tersedia').length
 );
 
-const daftarKategoriUnik = computed(() => {
-  const set = new Set(daftarMobil.value.map((m) => m.Kategori?.nama_kategori).filter(Boolean));
-  return [...set];
-});
-
-const mobilTersaring = computed(() => {
-  if (!filterKategori.value) return daftarMobil.value;
-  return daftarMobil.value.filter((m) => m.Kategori?.nama_kategori === filterKategori.value);
-});
 
 function formatHarga(harga) {
   return new Intl.NumberFormat('id-ID').format(harga);
@@ -128,6 +119,22 @@ function formatHarga(harga) {
 function bukaPerbandingan() {
   router.push(`/bandingkan?ids=${compareState.idTerpilih.join(',')}`);
 }
+
+function normalisasi(teks) {
+  return (teks || '').trim().toLowerCase();
+}
+
+const daftarKategoriUnik = computed(() => {
+  const set = new Set(daftarMobil.value.map((m) => m.Kategori?.nama_kategori).filter(Boolean));
+  return [...set];
+});
+
+const mobilTersaring = computed(() => {
+  if (!filterKategori.value) return daftarMobil.value;
+  return daftarMobil.value.filter(
+    (m) => normalisasi(m.Kategori?.nama_kategori) === normalisasi(filterKategori.value)
+  );
+});
 
 onMounted(async () => {
   try {
@@ -487,6 +494,7 @@ onMounted(async () => {
 .compare-checkbox input {
   margin: 0;
   cursor: pointer;
+  pointer-events: none;
 }
 
 .compare-bar {
