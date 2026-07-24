@@ -23,11 +23,18 @@
           <div class="field-row">
             <div class="field">
               <label>Merek</label>
-              <input v-model="form.nama_merek" placeholder="Contoh: Toyota, Honda" required />
+              <input v-model="form.nama_merek" list="daftar-merek" placeholder="Contoh: Toyota, Honda" required />
+              <datalist id="daftar-merek">
+                <option v-for="m in daftarMerekAda" :key="m.id_merek" :value="m.nama_merek" />
+              </datalist>
             </div>
             <div class="field">
               <label>Kategori</label>
-              <input v-model="form.nama_kategori" placeholder="Contoh: MPV, SUV, Sedan" required />
+              <input v-model="form.nama_kategori" list="daftar-kategori" placeholder="Contoh: MPV, SUV, Sedan"
+                required />
+              <datalist id="daftar-kategori">
+                <option v-for="k in daftarKategoriAda" :key="k.id_kategori" :value="k.nama_kategori" />
+              </datalist>
             </div>
           </div>
         </section>
@@ -97,34 +104,34 @@
           </div>
         </section>
 
+        <section v-if="isEdit" class="form-section">
+          <h2 class="section-title">Foto Mobil</h2>
+
+          <div v-if="daftarGambar.length" class="gambar-grid">
+            <div v-for="g in daftarGambar" :key="g.id_gambar" class="gambar-item">
+              <img :src="`${apiOrigin}${g.url_gambar}`" />
+              <button type="button" class="gambar-hapus" @click="hapusGambar(g.id_gambar)"
+                aria-label="Hapus foto">&times;</button>
+            </div>
+          </div>
+          <p v-else class="empty-note">Belum ada foto untuk mobil ini.</p>
+
+          <div class="field">
+            <label>Tambah foto baru (opsional)</label>
+            <input type="file" accept="image/png, image/jpeg, image/webp" @change="pilihFile" />
+            <p class="field-hint">Foto akan diunggah otomatis saat kamu klik "Simpan Data" di bawah.</p>
+          </div>
+        </section>
+
         <p v-if="error" class="error">{{ error }}</p>
 
         <div class="form-actions">
           <RouterLink to="/admin" class="btn-secondary">Batal</RouterLink>
           <button type="submit" class="btn-primary" :disabled="saving">
-            {{ saving ? 'Menyimpan...' : 'Simpan Data' }}
+            {{ saving ? (fileTerpilih ? 'Menyimpan & mengunggah...' : 'Menyimpan...') : 'Simpan Data' }}
           </button>
         </div>
       </form>
-
-      <section v-if="isEdit" class="form-card gambar-card">
-        <h2 class="section-title">Foto Mobil</h2>
-
-        <div v-if="daftarGambar.length" class="gambar-grid">
-          <div v-for="g in daftarGambar" :key="g.id_gambar" class="gambar-item">
-            <img :src="`${apiOrigin}${g.url_gambar}`" />
-            <button class="gambar-hapus" @click="hapusGambar(g.id_gambar)" aria-label="Hapus foto">&times;</button>
-          </div>
-        </div>
-        <p v-else class="empty-note">Belum ada foto untuk mobil ini.</p>
-
-        <form @submit.prevent="uploadGambar" class="upload-form">
-          <input type="file" accept="image/png, image/jpeg, image/webp" @change="pilihFile" required />
-          <button type="submit" class="btn-secondary" :disabled="uploading">
-            {{ uploading ? 'Mengunggah...' : 'Upload Foto' }}
-          </button>
-        </form>
-      </section>
     </main>
   </div>
 </template>
@@ -147,8 +154,9 @@ const form = reactive({
 const daftarGambar = ref([]);
 const error = ref(null);
 const saving = ref(false);
-const uploading = ref(false);
 const fileTerpilih = ref(null);
+const daftarMerekAda = ref([]);
+const daftarKategoriAda = ref([]);
 
 async function muatDataMobil() {
   if (!isEdit.value) return;
@@ -166,6 +174,7 @@ async function simpan() {
   try {
     if (isEdit.value) {
       await api.put(`/mobil/${route.params.id}`, form);
+      await uploadFotoJikaAda();
       router.push('/admin');
     } else {
       const res = await api.post('/mobil', form);
@@ -179,22 +188,15 @@ async function simpan() {
 }
 
 function pilihFile(e) {
-  fileTerpilih.value = e.target.files[0];
+  fileTerpilih.value = e.target.files[0] || null;
 }
 
-async function uploadGambar() {
+async function uploadFotoJikaAda() {
   if (!fileTerpilih.value) return;
-  uploading.value = true;
-  try {
-    const formData = new FormData();
-    formData.append('gambar', fileTerpilih.value);
-    await api.post(`/mobil/${route.params.id}/gambar`, formData);
-    await muatDataMobil();
-  } catch (err) {
-    error.value = 'Gagal mengunggah gambar';
-  } finally {
-    uploading.value = false;
-  }
+  const formData = new FormData();
+  formData.append('gambar', fileTerpilih.value);
+  await api.post(`/mobil/${route.params.id}/gambar`, formData);
+  fileTerpilih.value = null;
 }
 
 async function hapusGambar(idGambar) {
@@ -205,6 +207,16 @@ async function hapusGambar(idGambar) {
 
 onMounted(async () => {
   await muatDataMobil();
+  try {
+    const [resMerek, resKategori] = await Promise.all([
+      api.get('/merek'),
+      api.get('/kategori'),
+    ]);
+    daftarMerekAda.value = Array.isArray(resMerek.data.data) ? resMerek.data.data : [];
+    daftarKategoriAda.value = Array.isArray(resKategori.data.data) ? resKategori.data.data : [];
+  } catch (err) {
+    // Gagal ambil saran datalist tidak fatal — form tetap bisa dipakai dengan ketik manual.
+  }
 });
 </script>
 
@@ -354,10 +366,6 @@ onMounted(async () => {
   border-color: var(--text-muted);
 }
 
-.gambar-card {
-  margin-top: 8px;
-}
-
 .empty-note {
   color: var(--text-muted);
   font-size: 13px;
@@ -399,17 +407,9 @@ onMounted(async () => {
   line-height: 1;
 }
 
-.upload-form {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.upload-form input {
+.field-hint {
+  font-size: 12px;
   color: var(--text-muted);
-  font-size: 13px;
-  flex: 1;
-  min-width: 200px;
+  margin: 8px 0 0;
 }
 </style>

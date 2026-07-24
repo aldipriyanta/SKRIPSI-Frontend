@@ -3,11 +3,7 @@
     <header class="topbar glass">
       <div class="container topbar-inner">
         <div class="brand-mark">
-          <span class="logo-cube" aria-hidden="true">
-            <span class="face face-top"></span>
-            <span class="face face-left"></span>
-            <span class="face face-right"></span>
-          </span>
+          <img class="logo-mark" src="/showroom/logo.png" alt="Logo Arjuna Motor" />
           <div class="brand-text">
             <span class="brand">ARJUNA MOTOR</span>
             <span class="tagline">Showroom Mobil Bekas Terpercaya</span>
@@ -169,13 +165,12 @@ onMounted(async () => {
   gap: 14px;
 }
 
-.logo-cube {
-  position: relative;
-  width: 26px;
-  height: 26px;
-  transform-style: preserve-3d;
-  transform: rotateX(-18deg) rotateY(28deg);
+.logo-mark {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
   flex-shrink: 0;
+  border-radius: 6px;
 }
 
 .face {

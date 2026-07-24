@@ -11,46 +11,35 @@
                 <div class="footer-info">
                     <div class="info-row">
                         <span class="info-label">Alamat</span>
-                        <span>Jl. Contoh Raya No. 123, Malang, Jawa Timur</span>
+                        <span>Jl. Raya Rupakpicis, Mijen kulon, Klapasawit, Kec. Kalimanah, Kabupaten Purbalingga, Jawa
+                            Tengah 53371</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Jam Buka</span>
-                        <span>Senin - Sabtu, 08.00 - 17.00 WIB</span>
+                        <span>Senin - Sabtu, 07.00 - 17.00 WIB</span>
+                        <span>Minggu, 09.00 - 17.00 WIB</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Telepon</span>
-                        <span>0812-3456-7890</span>
+                        <span>0813-2805-2003</span>
                     </div>
                 </div>
 
                 <div class="social-links">
-                    <a href="https://instagram.com/arjunamotor" target="_blank" rel="noopener"
-                        class="social-link">Instagram</a>
-                    <a href="https://wa.me/6281234567890" target="_blank" rel="noopener"
+                    <a href="https://www.instagram.com/arjunamotorpbg?igsh=MTNvd244bHkxMzB1dQ==" target="_blank"
+                        rel="noopener" class="social-link">Instagram</a>
+                    <a href="https://wa.me/0813-2805-2003" target="_blank" rel="noopener"
                         class="social-link">WhatsApp</a>
-                    <a href="https://facebook.com/arjunamotor" target="_blank" rel="noopener"
+                    <a href="https://www.facebook.com/share/1CnzcTnVSM/" target="_blank" rel="noopener"
                         class="social-link">Facebook</a>
-                    <a href="https://www.olx.co.id/toko/arjuna-motor" target="_blank" rel="noopener"
-                        class="social-link">OLX</a>
                 </div>
             </div>
-
             <div class="footer-map">
                 <span class="section-label">Lokasi Showroom</span>
                 <iframe class="map-frame"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63342.98!2d112.6!3d-7.98!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zN8KwNTgnNDguMCJTIDExMsKwMzYnMDAuMCJF!5e0!3m2!1sid!2sid!4v0000000000"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3956.5928843156616!2d109.33751529999999!3d-7.3994298999999994!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6559cd62b55c43%3A0xf2a087aada0935ce!2sArjuna%20Motor%20Purbalingga!5e0!3m2!1sen!2sid!4v1784792771839!5m2!1sen!2sid"
                     width="100%" height="220" style="border:0" allowfullscreen="" loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-        </div>
-
-        <div class="container">
-            <span class="section-label">Foto Showroom</span>
-            <div class="showroom-gallery">
-                <div class="showroom-photo placeholder">Foto showroom 1</div>
-                <div class="showroom-photo placeholder">Foto showroom 2</div>
-                <div class="showroom-photo placeholder">Foto showroom 3</div>
-                <div class="showroom-photo placeholder">Foto showroom 4</div>
             </div>
         </div>
 
